@@ -34,6 +34,32 @@ describe('ResumeProfileSchema', () => {
     expect(result.summary).toBe('');
   });
 
+  it('successfully parses and sanitizes null values in optional fields', () => {
+    const result = ResumeProfileSchema.parse({
+      contact: {
+        fullName: 'Aditya Rane',
+        email: 'aditya@example.com',
+        phone: null,
+        location: null,
+      },
+      summary: null,
+      experience: [
+        {
+          id: 'exp-1',
+          company: 'Acme',
+          title: 'Engineer',
+          startDate: '2022-01',
+          location: null,
+          bullets: [],
+        }
+      ]
+    });
+    expect(result.contact.phone).toBeUndefined();
+    expect(result.contact.location).toBeUndefined();
+    expect(result.summary).toBe('');
+    expect(result.experience[0].location).toBeUndefined();
+  });
+
   it('rejects a contact block missing fullName', () => {
     expect(() =>
       ResumeProfileSchema.parse({

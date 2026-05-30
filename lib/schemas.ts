@@ -1,6 +1,19 @@
 import { z } from 'zod';
 
 // ==========================================
+// Helpers for Robust Null/Undefined Handling
+// ==========================================
+const nullableString = z.preprocess(
+  (val) => (val === null ? undefined : val),
+  z.string().optional()
+);
+
+const nullableStringWithDefault = (defaultValue: string) => z.preprocess(
+  (val) => (val === null ? undefined : val),
+  z.string().optional().default(defaultValue)
+);
+
+// ==========================================
 // 1. Core Resume Data Model Schemas
 // ==========================================
 
@@ -14,7 +27,7 @@ export const WorkExperienceSchema = z.object({
     (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'Not Specified'),
     z.string().min(1, "Job title is required")
   ),
-  location: z.string().optional(),
+  location: nullableString,
   startDate: z.preprocess(
     (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'Not Specified'),
     z.string().min(1, "Start date is required")
@@ -60,12 +73,12 @@ export const EducationDetailSchema = z.object({
     (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'Not Specified'),
     z.string().min(1, "Degree name is required")
   ),
-  fieldOfStudy: z.string().optional(),
+  fieldOfStudy: nullableString,
   graduationDate: z.preprocess(
     (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'Not Specified'),
     z.string().min(1, "Graduation date is required")
   ),
-  gpa: z.string().optional()
+  gpa: nullableString
 });
 
 export const ResumeProfileSchema = z.object({
@@ -81,8 +94,8 @@ export const ResumeProfileSchema = z.object({
       (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'placeholder@example.com'),
       z.string().email("Invalid email format")
     ),
-    phone: z.string().optional(),
-    location: z.string().optional(),
+    phone: nullableString,
+    location: nullableString,
     websiteUrls: z.preprocess(
       (val) => {
         if (!Array.isArray(val)) return [];
@@ -98,7 +111,7 @@ export const ResumeProfileSchema = z.object({
       z.array(z.string().url("Invalid URL format")).default([])
     )
   }),
-  summary: z.string().optional().default(""),
+  summary: nullableStringWithDefault(""),
   skills: z.array(z.string()).default([]),
   experience: z.array(WorkExperienceSchema).default([]),
   projects: z.array(ProjectDetailSchema).default([]),
@@ -112,7 +125,7 @@ export const ResumeProfileSchema = z.object({
 
 export const JobDescriptionProfileSchema = z.object({
   jobTitle: z.string().min(1, "Job title is required"),
-  company: z.string().optional(),
+  company: nullableString,
   requiredSkills: z.array(z.string()).default([]),
   preferredSkills: z.array(z.string()).default([]),
   responsibilities: z.array(z.string()).default([]),
@@ -194,7 +207,7 @@ export const TailoredWorkExperienceSchema = z.object({
 });
 
 export const TailoredResumeSchema = z.object({
-  tailoredSummary: z.string().optional().default(""),
+  tailoredSummary: nullableStringWithDefault(""),
   tailoredSkills: z.array(z.string()).default([]),
   tailoredExperience: z.array(TailoredWorkExperienceSchema).default([])
 });
