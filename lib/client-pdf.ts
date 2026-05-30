@@ -5,7 +5,7 @@
  * without requiring any server-side browser binaries.
  */
 export function printHtmlToPDF(html: string): void {
-  const printWindow = window.open('', '_blank', 'width=900,height=700');
+  const printWindow = window.open('', '_blank', 'width=1000,height=800');
   if (!printWindow) {
     throw new Error('Pop-up blocked. Please allow pop-ups for this site to export PDFs.');
   }
@@ -14,21 +14,62 @@ export function printHtmlToPDF(html: string): void {
   printWindow.document.write(html);
   printWindow.document.close();
 
-  // Wait for the content to fully render before triggering print
-  printWindow.onload = () => {
-    setTimeout(() => {
-      printWindow.focus();
-      printWindow.print();
-    }, 300);
+  let printTriggered = false;
+  const triggerPrint = () => {
+    if (printTriggered) return;
+    printTriggered = true;
+    printWindow.focus();
+    printWindow.print();
   };
 
-  // Fallback: if onload doesn't fire (some browsers), trigger after a delay
+  // Automatically close window after print/cancel completes
+  try {
+    printWindow.onafterprint = () => {
+      try {
+        printWindow.close();
+      } catch (e) {
+        // window already closed
+      }
+    };
+  } catch (e) {
+    // onafterprint not supported in this environment
+  }
+
+  // Robustly handle onload event (or print immediately if already loaded)
+  const checkAndPrint = () => {
+    if (printWindow.document.readyState === 'complete') {
+      if (printWindow.document.fonts) {
+        printWindow.document.fonts.ready.then(() => {
+          setTimeout(triggerPrint, 300);
+        }).catch(() => {
+          setTimeout(triggerPrint, 300);
+        });
+      } else {
+        setTimeout(triggerPrint, 300);
+      }
+    } else {
+      printWindow.onload = () => {
+        if (printWindow.document.fonts) {
+          printWindow.document.fonts.ready.then(() => {
+            setTimeout(triggerPrint, 300);
+          }).catch(() => {
+            setTimeout(triggerPrint, 300);
+          });
+        } else {
+          setTimeout(triggerPrint, 300);
+        }
+      };
+    }
+  };
+
+  checkAndPrint();
+
+  // Bulletproof fallback in case onload or readyState checks fail to trigger
   setTimeout(() => {
     try {
-      printWindow.focus();
-      printWindow.print();
-    } catch {
-      // Window may have been closed by user
+      triggerPrint();
+    } catch (e) {
+      // Window might already be closed
     }
-  }, 1000);
+  }, 1200);
 }

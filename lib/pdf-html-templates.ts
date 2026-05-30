@@ -11,10 +11,13 @@ export function generateSideBySideHTML(runData: TailoringRun): string {
       <head>
         <meta charset="utf-8" />
         <title>Resume Shapeshifter - Comparison Proof</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
           @page { 
             size: A4 landscape; 
-            margin: 10mm; 
+            margin: 0; 
           }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -25,7 +28,7 @@ export function generateSideBySideHTML(runData: TailoringRun): string {
             line-height: 1.5; 
             font-size: 10px; 
             margin: 0; 
-            padding: 10mm;
+            padding: 15mm;
             background: #ffffff; 
           }
           .header { 
@@ -233,10 +236,13 @@ export function generateCleanResumeHTML(runData: TailoringRun): string {
       <head>
         <meta charset="utf-8" />
         <title>${escapeHtml(contact.fullName)} - Tailored Resume</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
           @page { 
             size: A4 portrait; 
-            margin: 15mm; 
+            margin: 0; 
           }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -247,7 +253,7 @@ export function generateCleanResumeHTML(runData: TailoringRun): string {
             line-height: 1.4; 
             font-size: 10px; 
             margin: 0; 
-            padding: 15mm;
+            padding: 20mm;
             background: #ffffff; 
           }
           .header {
