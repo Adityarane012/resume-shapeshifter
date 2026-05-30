@@ -8,8 +8,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['lib/**/*.ts'],
-      exclude: ['lib/pdf-generator.ts'] // puppeteer deps skipped in unit coverage
+      include: ['lib/**/*.ts']
     }
   }
 });

@@ -71,7 +71,10 @@ export const EducationDetailSchema = z.object({
 export const ResumeProfileSchema = z.object({
   contact: z.object({
     fullName: z.preprocess(
-      (val) => (typeof val === 'string' && val.trim() !== '' ? val : 'Professional Candidate'),
+      (val) => {
+        if (val === undefined) return undefined;
+        return typeof val === 'string' && val.trim() !== '' ? val : 'Professional Candidate';
+      },
       z.string().min(1, "Full name is required")
     ),
     email: z.preprocess(
