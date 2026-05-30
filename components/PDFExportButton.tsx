@@ -3,6 +3,7 @@
 import React from 'react';
 import { Download, RefreshCw } from 'lucide-react';
 import { TailoringRun } from '../lib/types';
+import { printHtmlToPDF } from '../lib/client-pdf';
 
 interface PDFExportButtonProps {
   runData: TailoringRun | null;
@@ -29,15 +30,8 @@ export const PDFExportButton: React.FC<PDFExportButtonProps> = ({ runData }) => 
         throw new Error(errData.error || 'Failed to generate PDF.');
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `shapeshifter_proof_${runData.runId.substring(0, 8)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      const { html } = await response.json();
+      printHtmlToPDF(html);
     } catch (err) {
       setError((err as Error).message || 'PDF generation failed.');
     } finally {

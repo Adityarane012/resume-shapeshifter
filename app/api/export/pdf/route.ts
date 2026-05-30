@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { compileSideBySidePDF } from '../../../../lib/pdf-generator';
+import { generateSideBySideHTML } from '../../../../lib/pdf-html-templates';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,17 +12,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Compile A4 landscape comparison proof PDF via Puppeteer
-    const pdfBuffer = await compileSideBySidePDF(runData);
+    // Generate styled HTML for client-side print-to-PDF
+    const html = generateSideBySideHTML(runData);
 
-    return new NextResponse(new Uint8Array(pdfBuffer), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="shapeshifter_proof_${runData.runId.substring(0, 8)}.pdf"`,
-        'Content-Length': pdfBuffer.length.toString(),
-      },
-    });
+    return NextResponse.json({ html });
   } catch (error) {
     console.error('PDF export service endpoint failure:', error);
     return NextResponse.json(

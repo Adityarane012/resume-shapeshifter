@@ -3,6 +3,7 @@
 import React from 'react';
 import { Sparkles, RefreshCw } from 'lucide-react';
 import { TailoringRun } from '../lib/types';
+import { printHtmlToPDF } from '../lib/client-pdf';
 
 interface CleanResumeExportButtonProps {
   runData: TailoringRun | null;
@@ -29,15 +30,8 @@ export const CleanResumeExportButton: React.FC<CleanResumeExportButtonProps> = (
         throw new Error(errData.error || 'Failed to generate clean resume PDF.');
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tailored_resume_${runData.targetJobDescription.jobTitle.toLowerCase().replace(/[^a-z0-9]+/g, '_')}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      const { html } = await response.json();
+      printHtmlToPDF(html);
     } catch (err) {
       setError((err as Error).message || 'Clean PDF generation failed.');
     } finally {

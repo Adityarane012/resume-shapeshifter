@@ -157,8 +157,6 @@ export default function WorkspaceDashboard() {
   const [identifiedGaps, setIdentifiedGaps] = useState<ResumeGap[]>([]);
   const [runData, setRunData] = useState<TailoringRun | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [isExportingPDF, setIsExportingPDF] = useState(false);
-
   // Loading Screen Steps
   const steps = [
     'Ingesting binary file formats and normalizing buffers...',
@@ -222,7 +220,6 @@ export default function WorkspaceDashboard() {
     setIdentifiedGaps([]);
     setRunData(null);
     setAnalysisError(null);
-    setIsExportingPDF(false);
   };
 
   const handleBackToInputs = () => {
@@ -299,33 +296,8 @@ export default function WorkspaceDashboard() {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (!runData) return;
-    setIsExportingPDF(true);
-    try {
-      const response = await fetch('/api/export/pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(runData)
-      });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || 'Failed to render proof PDF.');
-      }
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `shapeshifter_proof_${runData.runId.substring(0, 8)}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err) {
-      alert((err as Error).message || 'Failed to download PDF.');
-    } finally {
-      setIsExportingPDF(false);
-    }
-  };
+
+
 
   // --- Document Ingestion Handlers ---
 

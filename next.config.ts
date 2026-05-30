@@ -7,9 +7,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
 
   // Fix: pdf-parse uses dynamic require() internally which Turbopack/webpack corrupts when bundled.
-  // We also mark puppeteer-core and @sparticuz/chromium as externals to prevent Next.js from 
-  // bundling the browser engine assets into the API chunks, preserving their binary search paths.
-  serverExternalPackages: ['pdf-parse', 'puppeteer-core', '@sparticuz/chromium'],
+  serverExternalPackages: ['pdf-parse'],
 };
 
 export default nextConfig;
